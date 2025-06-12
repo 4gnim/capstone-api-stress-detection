@@ -8,7 +8,21 @@ import numpy as np
 import os
 
 app = Flask(__name__)
-CORS(app)
+
+# Konfigurasi CORS secara eksplisit
+CORS(app, resources={
+    r"/predict": {
+        "origins": "https://stress-chat-detector.vercel.app"
+    }
+})
+
+# Middleware untuk menangani headers tambahan
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'https://stress-chat-detector.vercel.app')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    return response
 
 # Load model dan tokenizer
 model = load_model('model/model_lstm_stress.h5')
@@ -17,8 +31,12 @@ with open('model/tokenizer_stress.pkl', 'rb') as f:
 
 max_len = 100  # sesuai saat training
 
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["POST", "OPTIONS"])
 def predict():
+    if request.method == "OPTIONS":
+        # Preflight request akan langsung direspon tanpa proses
+        return jsonify({}), 200
+
     try:
         data = request.get_json()
         print("Received data:", data)
@@ -43,5 +61,5 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Gunakan PORT dari Railway
+    port = int(os.environ.get("PORT", 5000))  # Railway default port
     app.run(debug=False, host="0.0.0.0", port=port)
