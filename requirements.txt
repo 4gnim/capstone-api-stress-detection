@@ -2,3 +2,6 @@ flask
 tensorflow
 nltk
 Sastrawi
+flask-cors
+numpy
+scikit-learn
