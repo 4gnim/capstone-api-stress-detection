@@ -2,11 +2,13 @@ from flask import Flask, request, jsonify
 from preprocessing import preprocess
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from flask_cors import CORS
 import pickle
 import numpy as np
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 # Load model dan tokenizer
 model = load_model('model/model_lstm_stress.h5')
