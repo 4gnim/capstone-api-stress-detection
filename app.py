@@ -10,19 +10,7 @@ import os
 app = Flask(__name__)
 
 # Konfigurasi CORS secara eksplisit
-CORS(app, resources={
-    r"/predict": {
-        "origins": "https://stress-chat-detector.vercel.app"
-    }
-})
-
-# Middleware untuk menangani headers tambahan
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'https://stress-chat-detector.vercel.app')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-    return response
+CORS(app, origins=["https://stress-chat-detector.vercel.app"])
 
 # Load model dan tokenizer
 model = load_model('model/model_lstm_stress.h5')
